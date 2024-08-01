@@ -14,12 +14,12 @@ header {
 main {
     padding: 1em;
 }
-#map {
-    height: 500px; /* Pas de hoogte naar wens aan */
-    width: 100%; /* Zorg ervoor dat de kaart de volledige breedte beslaat */
-}
-
 
 section {
     margin-bottom: 2em;
+}
+
+#map {
+    height: 500px;
+    width: 100%;
 }

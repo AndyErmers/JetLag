@@ -5,25 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JetLag</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
     <header>
         <h1>JetLag</h1>
     </header>
     <main>
-        <section id="map">
+        <section id="map" style="height: 500px;">
             <h2>Live Kaart van Limburg</h2>
-            <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-            <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
         </section>
         <section id="leaderboard">
             <h2>Leaderboard</h2>
-            <!-- Voeg hier de leaderboard tabel toe -->
+            <table id="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Punten</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamisch gegenereerde rijen -->
+                </tbody>
+            </table>
         </section>
         <section id="rules">
             <h2>Spelregels</h2>
-            <!-- Voeg hier de spelregels toe -->
         </section>
     </main>
     <script src="js/scripts.js"></script>

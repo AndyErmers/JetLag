@@ -4,15 +4,23 @@ document.addEventListener('DOMContentLoaded', function () {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Voeg markers toe voor de bezienswaardigheden
+
+
+    // Voeg markers toe voor de bezienswaardigheden vanuit JSON
     fetch('data/challenges.json')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             data.forEach(challenge => {
                 L.marker([challenge.lat, challenge.lon]).addTo(map)
                     .bindPopup(`<b>${challenge.location}</b><br>${challenge.challenge}`);
             });
-        });
+        })
+        .catch(error => console.error('Error loading challenges:', error));
 });
 
 function updateLeaderboard() {
