@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-
+    var bounds = L.latLngBounds(); // Maak een lege bounds-object
 
     // Voeg markers toe voor de bezienswaardigheden vanuit JSON
     fetch('data/challenges.json')
@@ -16,9 +16,13 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(data => {
             data.forEach(challenge => {
-                L.marker([challenge.lat, challenge.lon]).addTo(map)
+                var marker = L.marker([challenge.lat, challenge.lon]).addTo(map)
                     .bindPopup(`<b>${challenge.location}</b><br>${challenge.challenge}`);
+                bounds.extend(marker.getLatLng()); // Breid de bounds uit met elke marker
             });
+            map.fitBounds(bounds); // Pas de kaart aan om alle markers te tonen
+            map.setMaxBounds(bounds); // Stel de maximale bounds in
+            map.setMinZoom(map.getBoundsZoom(bounds)); // Stel het minimale zoomniveau in op basis van de bounds
         })
         .catch(error => console.error('Error loading challenges:', error));
 });
