@@ -1,0 +1,11 @@
+# Ignore Visual Studio Code files
+.vscode/
+.vs/
+
+# Ignore all .vsidx files
+*.vsidx
+
+# Ignore other unnecessary files
+node_modules/
+dist/
+build/

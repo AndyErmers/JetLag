@@ -1,0 +1,48 @@
+{
+  "name": "JetLag",
+  "genre": "Outdoor teamspel",
+  "goal": "Verover bezienswaardigheden in Limburg door challenges te voltooien en verdedig ze tegen andere teams om de meeste punten te verdienen.",
+  "requirements": [
+    "Teams: Duo's (teams van twee personen)",
+    "Timer: Een klok of timer ingesteld op 12 uur",
+    "Challenges: Een lijst van challenges voor elke bezienswaardigheid",
+    "Scorekaarten: Digitaal bij te houden via een website",
+    "Kaart van Limburg: Beschikbaar op de website met gemarkeerde bezienswaardigheden"
+  ],
+  "preparation": [
+    "Bezienswaardigheden Selecteren: Kies verschillende bezienswaardigheden in Limburg zoals het Roda Stadion in Kerkrade, Kasteel Hoensbroek, de grotten van Valkenburg, etc.",
+    "Challenges Voorbereiden: Maak een specifieke challenge voor elke bezienswaardigheid. Zorg ervoor dat elke challenge haalbaar is en een extra moeilijkheidsniveau heeft voor heroveringen.",
+    "Teams Maken: Verdeel de spelers in duo's.",
+    "Startpunt: Het spel begint in Heerlen."
+  ],
+  "websiteFeatures": [
+    "Live Kaart: De website toont een kaart van Limburg met kleuren die aangeven welke bezienswaardigheden door welke teams zijn veroverd.",
+    "Leaderboard: De website toont een leaderboard met de actuele punten en teamscores."
+  ],
+  "rules": [
+    "Start van het Spel: Alle teams beginnen in Heerlen. Wanneer de timer start, vertrekken de teams naar verschillende bezienswaardigheden.",
+    "Vrije Verplaatsing: Teams mogen zelf bepalen naar welke bezienswaardigheid ze gaan, waardoor strategie een belangrijke rol speelt.",
+    "Challenges Uitvoeren: Elk team moet de challenge bij een bezienswaardigheid voltooien om deze te veroveren. Bij voltooiing krijgen ze punten en markeren ze de locatie als veroverd op de website.",
+    "Verovering: Nadat een team een bezienswaardigheid heeft veroverd, kunnen andere teams proberen deze plek weer te veroveren door de moeilijkere challenge te voltooien."
+  ],
+  "points": [
+    "Eerste verovering: 100 punten",
+    "Herverovering: 200 punten voor het team dat de locatie herverovert",
+    "Laatste verovering (bij het einde van de timer): 100 extra punten"
+  ],
+  "winConditions": [
+    "Einde van het Spel: Het spel eindigt na 12 uur.",
+    "Puntentelling: De punten worden bijgehouden op het leaderboard op de website.",
+    "Winnaar: Het team met de meeste punten aan het einde van de 12 uur wint het spel."
+  ],
+  "example": [
+    "Ronde 1: Team A arriveert bij het Roda Stadion en voltooit de challenge (bijv. een puzzel over de geschiedenis van het stadion) en krijgt 100 punten.",
+    "Ronde 2: Team B arriveert bij het Roda Stadion, voert de moeilijkere challenge uit (bijv. een fysieke opdracht binnen een tijdslimiet) en herverovert de locatie voor 200 punten.",
+    "Einde van de timer: Het team dat het laatst het Roda Stadion heeft veroverd krijgt extra 100 punten."
+  ],
+  "tips": [
+    "Tactische Verplaatsingen: Plan je route efficiënt om zoveel mogelijk bezienswaardigheden te bezoeken.",
+    "Teamwork: Werk goed samen met je partner om challenges snel te voltooien.",
+    "Verdedigen: Probeer veroverde locaties te verdedigen door andere teams te vertragen of af te leiden."
+  ]
+}

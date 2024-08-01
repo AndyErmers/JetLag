@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JetLag</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Voeg Firebase SDK's toe -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <header>
+        <h1>JetLag</h1>
+    </header>
+    <main>
+        <section id="map" style="height: 500px;">
+            <h2>Live Kaart van Limburg</h2>
+        </section>
+        <section id="leaderboard">
+            <h2>Leaderboard</h2>
+            <form id="team-form">
+                <input type="text" id="team-name" placeholder="Team naam" required>
+                <input type="text" id="member-names" placeholder="Namen leden (gescheiden door komma's)" required>
+                <button type="submit">Team toevoegen</button>
+            </form>
+            <table id="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Punten</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamisch gegenereerde rijen -->
+                </tbody>
+            </table>
+        </section>
+        <section id="rules">
+            <h2>Spelregels</h2>
+            <div class="rules-content">
+                <p><strong>Naam van de game:</strong> JetLag</p>
+                <p><strong>Genre:</strong> Outdoor teamspel</p>
+                <p><strong>Doel van het spel:</strong> Verover bezienswaardigheden in Limburg door challenges te voltooien en verdedig ze tegen andere teams om de meeste punten te verdienen.</p>
+
+                <h3>Benodigdheden</h3>
+                <ul>
+                    <li>Teams: Duo's (teams van twee personen)</li>
+                    <li>Timer: Een klok of timer ingesteld op 12 uur</li>
+                    <li>Challenges: Een lijst van challenges voor elke bezienswaardigheid</li>
+                    <li>Scorekaarten: Digitaal bij te houden via een website</li>
+                    <li>Kaart van Limburg: Beschikbaar op de website met gemarkeerde bezienswaardigheden</li>
+                </ul>
+
+                <h3>Voorbereiding</h3>
+                <ul>
+                    <li>Bezienswaardigheden Selecteren: Kies verschillende bezienswaardigheden in Limburg zoals het Roda Stadion in Kerkrade, Kasteel Hoensbroek, de grotten van Valkenburg, etc.</li>
+                    <li>Challenges Voorbereiden: Maak een specifieke challenge voor elke bezienswaardigheid. Zorg ervoor dat elke challenge haalbaar is en een extra moeilijkheidsniveau heeft voor heroveringen.</li>
+                    <li>Teams Maken: Verdeel de spelers in duo's.</li>
+                    <li>Startpunt: Het spel begint in Heerlen.</li>
+                </ul>
+
+                <h3>Website Functies</h3>
+                <ul>
+                    <li>Live Kaart: De website toont een kaart van Limburg met kleuren die aangeven welke bezienswaardigheden door welke teams zijn veroverd.</li>
+                    <li>Leaderboard: De website toont een leaderboard met de actuele punten en teamscores.</li>
+                </ul>
+
+                <h3>Spelregels</h3>
+                <ul>
+                    <li><strong>Start van het Spel:</strong> Alle teams beginnen in Heerlen. Wanneer de timer start, vertrekken de teams naar verschillende bezienswaardigheden.</li>
+                    <li><strong>Vrije Verplaatsing:</strong> Teams mogen zelf bepalen naar welke bezienswaardigheid ze gaan, waardoor strategie een belangrijke rol speelt.</li>
+                    <li><strong>Challenges Uitvoeren:</strong> Elk team moet de challenge bij een bezienswaardigheid voltooien om deze te veroveren. Bij voltooiing krijgen ze punten en markeren ze de locatie als veroverd op de website.</li>
+                    <li><strong>Verovering:</strong> Nadat een team een bezienswaardigheid heeft veroverd, kunnen andere teams proberen deze plek weer te veroveren door de moeilijkere challenge te voltooien.</li>
+                </ul>
+
+                <h3>Punten</h3>
+                <ul>
+                    <li>Eerste verovering: 100 punten</li>
+                    <li>Herverovering: 200 punten voor het team dat de locatie herverovert</li>
+                    <li>Laatste verovering (bij het einde van de timer): 100 extra punten</li>
+                </ul>
+
+                <h3>Winvoorwaarden</h3>
+                <ul>
+                    <li><strong>Einde van het Spel:</strong> Het spel eindigt na 12 uur.</li>
+                    <li><strong>Puntentelling:</strong> De punten worden bijgehouden op het leaderboard op de website.</li>
+                    <li><strong>Winnaar:</strong> Het team met de meeste punten aan het einde van de 12 uur wint het spel.</li>
+                </ul>
+
+                <h3>Voorbeeld</h3>
+                <p>Ronde 1: Team A arriveert bij het Roda Stadion en voltooit de challenge (bijv. een puzzel over de geschiedenis van het stadion) en krijgt 100 punten.</p>
+                <p>Ronde 2: Team B arriveert bij het Roda Stadion, voert de moeilijkere challenge uit (bijv. een fysieke opdracht binnen een tijdslimiet) en herverovert de locatie voor 200 punten.</p>
+                <p>Einde van de timer: Het team dat het laatst het Roda Stadion heeft veroverd krijgt extra 100 punten.</p>
+
+                <h3>Tips en Strategieën</h3>
+                <ul>
+                    <li>Tactische Verplaatsingen: Plan je route efficiënt om zoveel mogelijk bezienswaardigheden te bezoeken.</li>
+                    <li>Teamwork: Werk goed samen met je partner om challenges snel te voltooien.</li>
+                    <li>Verdedigen: Probeer veroverde locaties te verdedigen door andere teams te vertragen of af te leiden.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+    <script src="js/scripts.js"></script>
+</body>
+</html>
