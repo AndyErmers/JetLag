@@ -23,3 +23,22 @@ section {
     height: 500px;
     width: 100%;
 }
+
+#rules h3 {
+    margin-top: 1em;
+    font-size: 1.2em;
+    color: #333;
+}
+
+#rules ul {
+    padding-left: 20px;
+    list-style-type: disc;
+}
+
+#rules p {
+    margin: 0.5em 0;
+}
+
+.rules-content {
+    line-height: 1.6;
+}
