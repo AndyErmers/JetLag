@@ -14,3 +14,22 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 });
+
+function updateLeaderboard() {
+    const leaderboard = [
+        { team: "Team A", points: 300 },
+        { team: "Team B", points: 200 }
+        // Voeg meer teams en punten toe
+    ];
+    const tableBody = document.querySelector('#leaderboard-table tbody');
+    tableBody.innerHTML = '';
+    leaderboard.forEach(entry => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${entry.team}</td><td>${entry.points}</td>`;
+        tableBody.appendChild(row);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    updateLeaderboard();
+});
