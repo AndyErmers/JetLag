@@ -43,17 +43,17 @@ section {
     line-height: 1.6;
 }
 
-#team-form {
+#team-form, #update-score-form {
     margin-bottom: 1em;
 }
 
-    #team-form input {
+    #team-form input, #update-score-form input, #update-score-form select {
         padding: 0.5em;
         font-size: 1em;
         margin-right: 0.5em;
     }
 
-    #team-form button {
+    #team-form button, #update-score-form button {
         padding: 0.5em 1em;
         font-size: 1em;
         background-color: #4CAF50;
@@ -62,7 +62,7 @@ section {
         cursor: pointer;
     }
 
-        #team-form button:hover {
+        #team-form button:hover, #update-score-form button:hover {
             background-color: #45a049;
         }
 

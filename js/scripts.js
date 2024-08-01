@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Voeg markers toe voor de bezienswaardigheden vanuit Firebase
     database.ref('challenges').once('value').then(function (snapshot) {
-        snapshot.val().forEach(function (challenge) {
+        const challenges = snapshot.val();
+        challenges.forEach(function (challenge) {
             var marker = L.marker([challenge.lat, challenge.lon]).addTo(map)
                 .bindPopup(`<b>${challenge.location}</b><br>${challenge.challenge}`);
             bounds.extend(marker.getLatLng()); // Breid de bounds uit met elke marker
@@ -39,11 +40,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const teamNameInput = document.getElementById('team-name');
     const memberNamesInput = document.getElementById('member-names');
     const leaderboardTableBody = document.querySelector('#leaderboard-table tbody');
+    const teamSelect = document.getElementById('team-select');
+    const updateScoreForm = document.getElementById('update-score-form');
+    const pointsInput = document.getElementById('points');
 
     // Laad teams vanuit Firebase
     database.ref('teams').on('value', function (snapshot) {
         let teams = snapshot.val();
         updateLeaderboard(teams);
+        updateTeamSelect(teams);
     });
 
     function updateLeaderboard(teams) {
@@ -58,12 +63,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function updateTeamSelect(teams) {
+        teamSelect.innerHTML = '';
+        for (const teamId in teams) {
+            if (teams.hasOwnProperty(teamId)) {
+                const team = teams[teamId];
+                const option = document.createElement('option');
+                option.value = teamId;
+                option.textContent = team.name;
+                teamSelect.appendChild(option);
+            }
+        }
+    }
+
     teamForm.addEventListener('submit', function (event) {
         event.preventDefault();
         const teamName = teamNameInput.value.trim();
         const memberNames = memberNamesInput.value.trim().split(',').map(name => name.trim());
         database.ref('teams').once('value').then(snapshot => {
-            const teams = snapshot.val();
+            const teams = snapshot.val() || {};
             if (teamName && memberNames.length && !Object.values(teams).find(team => team.name === teamName)) {
                 const newTeamRef = database.ref('teams').push();
                 newTeamRef.set({
@@ -75,6 +93,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 memberNamesInput.value = '';
             }
         });
+    });
+
+    updateScoreForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const teamId = teamSelect.value;
+        const points = parseInt(pointsInput.value);
+        if (teamId && !isNaN(points)) {
+            database.ref(`teams/${teamId}`).once('value').then(snapshot => {
+                const team = snapshot.val();
+                const newPoints = (team.points || 0) + points;
+                database.ref(`teams/${teamId}`).update({ points: newPoints });
+                pointsInput.value = '';
+            });
+        }
     });
 
     // Laad en toon spelregels vanuit Firebase
