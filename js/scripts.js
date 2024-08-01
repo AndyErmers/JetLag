@@ -21,27 +21,62 @@ document.addEventListener('DOMContentLoaded', function () {
                 bounds.extend(marker.getLatLng()); // Breid de bounds uit met elke marker
             });
             map.fitBounds(bounds); // Pas de kaart aan om alle markers te tonen
-            map.setMaxBounds(bounds); // Stel de maximale bounds in
-            map.setMinZoom(map.getBoundsZoom(bounds)); // Stel het minimale zoomniveau in op basis van de bounds
+            map.setMaxBounds(bounds.pad(0.5)); // Stel de maximale bounds in met een padding
         })
         .catch(error => console.error('Error loading challenges:', error));
-});
 
-function updateLeaderboard() {
-    const leaderboard = [
-        { team: "Team A", points: 300 },
-        { team: "Team B", points: 200 }
-        // Voeg meer teams en punten toe
-    ];
-    const tableBody = document.querySelector('#leaderboard-table tbody');
-    tableBody.innerHTML = '';
-    leaderboard.forEach(entry => {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${entry.team}</td><td>${entry.points}</td>`;
-        tableBody.appendChild(row);
+    // Teams en leaderboard functionaliteit
+    const teamForm = document.getElementById('team-form');
+    const teamNameInput = document.getElementById('team-name');
+    const memberNamesInput = document.getElementById('member-names');
+    const leaderboardTableBody = document.querySelector('#leaderboard-table tbody');
+    let teams = loadTeams();
+
+    // Laad teams vanuit localStorage
+    function loadTeams() {
+        const teams = localStorage.getItem('teams');
+        return teams ? JSON.parse(teams) : [];
+    }
+
+    function saveTeams() {
+        localStorage.setItem('teams', JSON.stringify(teams));
+    }
+
+    function updateLeaderboard() {
+        leaderboardTableBody.innerHTML = '';
+        teams.forEach(team => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${team.name}</td><td>${team.points}</td>`;
+            leaderboardTableBody.appendChild(row);
+        });
+    }
+
+    teamForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const teamName = teamNameInput.value.trim();
+        const memberNames = memberNamesInput.value.trim().split(',').map(name => name.trim());
+        if (teamName && !teams.find(team => team.name === teamName)) {
+            teams.push({ name: teamName, members: memberNames, points: 0 });
+            teamNameInput.value = '';
+            memberNamesInput.value = '';
+            updateLeaderboard();
+            saveTeams();
+        }
     });
-}
 
-document.addEventListener('DOMContentLoaded', function () {
+    // Functie om scores bij te werken
+    function updateTeamScore(teamName, points) {
+        const team = teams.find(t => t.name === teamName);
+        if (team) {
+            team.points += points;
+            updateLeaderboard();
+            saveTeams();
+        }
+    }
+
+    // Initial update
     updateLeaderboard();
+
+    // Voorbeeld van het bijwerken van scores
+    // updateTeamScore('Team A', 100);
 });
