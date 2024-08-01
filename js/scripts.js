@@ -108,39 +108,4 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     });
-
-    // Laad en toon spelregels vanuit Firebase
-    database.ref('rules').once('value').then(function (snapshot) {
-        const rules = snapshot.val();
-        const rulesSection = document.querySelector('#rules .rules-content');
-        rulesSection.innerHTML = `
-            <p><strong>Naam van de game:</strong> ${rules.name}</p>
-            <p><strong>Genre:</strong> ${rules.genre}</p>
-            <p><strong>Doel van het spel:</strong> ${rules.goal}</p>
-
-            <h3>Benodigdheden</h3>
-            <ul>${rules.requirements.map(item => `<li>${item}</li>`).join('')}</ul>
-
-            <h3>Voorbereiding</h3>
-            <ul>${rules.preparation.map(item => `<li>${item}</li>`).join('')}</ul>
-
-            <h3>Website Functies</h3>
-            <ul>${rules.websiteFeatures.map(item => `<li>${item}</li>`).join('')}</ul>
-
-            <h3>Spelregels</h3>
-            <ul>${rules.rules.map(item => `<li>${item}</li>`).join('')}</ul>
-
-            <h3>Punten</h3>
-            <ul>${rules.points.map(item => `<li>${item}</li>`).join('')}</ul>
-
-            <h3>Winvoorwaarden</h3>
-            <ul>${rules.winConditions.map(item => `<li>${item}</li>`).join('')}</ul>
-
-            <h3>Voorbeeld</h3>
-            ${rules.example.map(item => `<p>${item}</p>`).join('')}
-
-            <h3>Tips en Strategieën</h3>
-            <ul>${rules.tips.map(item => `<li>${item}</li>`).join('')}</ul>
-        `;
-    }).catch(error => console.error('Error loading rules:', error));
 });
