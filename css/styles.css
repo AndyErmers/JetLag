@@ -24,48 +24,6 @@ section {
     width: 100%;
 }
 
-#rules h3 {
-    margin-top: 1em;
-    font-size: 1.2em;
-    color: #333;
-}
-
-#rules ul {
-    padding-left: 20px;
-    list-style-type: disc;
-}
-
-#rules p {
-    margin: 0.5em 0;
-}
-
-.rules-content {
-    line-height: 1.6;
-}
-
-#team-form, #update-score-form {
-    margin-bottom: 1em;
-}
-
-    #team-form input, #update-score-form input, #update-score-form select {
-        padding: 0.5em;
-        font-size: 1em;
-        margin-right: 0.5em;
-    }
-
-    #team-form button, #update-score-form button {
-        padding: 0.5em 1em;
-        font-size: 1em;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
-
-        #team-form button:hover, #update-score-form button:hover {
-            background-color: #45a049;
-        }
-
 #leaderboard-table {
     width: 100%;
     border-collapse: collapse;
@@ -79,4 +37,39 @@ section {
 
     #leaderboard-table th {
         background-color: #f2f2f2;
+    }
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+    .close-button:hover, .close-button:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
     }

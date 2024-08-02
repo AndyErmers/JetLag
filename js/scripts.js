@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const challenges = snapshot.val();
         challenges.forEach(function (challenge) {
             var marker = L.marker([challenge.lat, challenge.lon]).addTo(map)
-                .bindPopup(`<b>${challenge.location}</b><br>${challenge.challenge}`);
+                .bindPopup(`<b>${challenge.location}</b><br><button onclick="startChallenge('${challenge.location}')">Challenge starten?</button>`);
             bounds.extend(marker.getLatLng()); // Breid de bounds uit met elke marker
         });
         map.fitBounds(bounds); // Pas de kaart aan om alle markers te tonen
@@ -36,9 +36,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }).catch(error => console.error('Error loading challenges:', error));
 
     // Teams en leaderboard functionaliteit
-    const teamForm = document.getElementById('team-form');
-    const teamNameInput = document.getElementById('team-name');
-    const memberNamesInput = document.getElementById('member-names');
     const leaderboardTableBody = document.querySelector('#leaderboard-table tbody');
     const teamSelect = document.getElementById('team-select');
     const updateScoreForm = document.getElementById('update-score-form');
@@ -76,25 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    teamForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        const teamName = teamNameInput.value.trim();
-        const memberNames = memberNamesInput.value.trim().split(',').map(name => name.trim());
-        database.ref('teams').once('value').then(snapshot => {
-            const teams = snapshot.val() || {};
-            if (teamName && memberNames.length && !Object.values(teams).find(team => team.name === teamName)) {
-                const newTeamRef = database.ref('teams').push();
-                newTeamRef.set({
-                    name: teamName,
-                    members: memberNames,
-                    points: 0
-                });
-                teamNameInput.value = '';
-                memberNamesInput.value = '';
-            }
-        });
-    });
-
     updateScoreForm.addEventListener('submit', function (event) {
         event.preventDefault();
         const teamId = teamSelect.value;
@@ -108,4 +86,36 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     });
+
+    // Modal functionality
+    const modal = document.getElementById("challengeModal");
+    const closeButton = document.querySelector(".close-button");
+
+    closeButton.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
+
+    window.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+
+    window.startChallenge = function (location) {
+        database.ref('challenges').once('value').then(function (snapshot) {
+            const challenges = snapshot.val();
+            const challenge = challenges.find(ch => ch.location === location && ch.veroverd === false);
+            if (challenge) {
+                database.ref('opdrachten').once('value').then(function (opdrachtenSnapshot) {
+                    const opdrachten = opdrachtenSnapshot.val();
+                    const opdracht = opdrachten.find(op => op.niveau === 0);
+                    if (opdracht) {
+                        document.getElementById('challengeText').textContent = opdracht.opdracht;
+                        document.getElementById('challengePoints').textContent = `Punten: ${opdracht.punten}`;
+                        modal.style.display = "block";
+                    }
+                });
+            }
+        });
+    };
 });
