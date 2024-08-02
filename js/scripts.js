@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Firebase configuratie
     const firebaseConfig = {
         apiKey: "AIzaSyC8WF1NnRcvg4FOmuVjeGZaOAXUQFnpsRY",
         authDomain: "jetlag-952b5.firebaseapp.com",
@@ -11,41 +10,37 @@ document.addEventListener('DOMContentLoaded', function () {
         measurementId: "G-0DCQL9NZRN"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Kaart instellen
     var map = L.map('map').setView([50.85, 5.95], 10);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    var bounds = L.latLngBounds(); // Maak een lege bounds-object
+    var bounds = L.latLngBounds();
 
-    // Voeg markers toe voor de bezienswaardigheden vanuit Firebase
     database.ref('challenges').once('value').then(function (snapshot) {
         const challenges = snapshot.val();
         challenges.forEach(function (challenge) {
-            var marker = L.marker([challenge.lat, challenge.lon]).addTo(map)
+            var marker = createColoredMarker(challenge['kleur?'], [challenge.lat, challenge.lon]);
+            marker.addTo(map)
                 .bindPopup(`<b>${challenge.location}</b><br><button onclick="startChallenge('${challenge.location}')">Challenge starten?</button>`);
-            bounds.extend(marker.getLatLng()); // Breid de bounds uit met elke marker
+            bounds.extend(marker.getLatLng());
         });
-        map.fitBounds(bounds); // Pas de kaart aan om alle markers te tonen
-        map.setMaxBounds(bounds.pad(0.5)); // Stel de maximale bounds in met een padding
+        map.fitBounds(bounds);
+        map.setMaxBounds(bounds.pad(0.5));
     }).catch(error => console.error('Error loading challenges:', error));
 
-    // Teams en leaderboard functionaliteit
+
     const leaderboardTableBody = document.querySelector('#leaderboard-table tbody');
     const teamSelect = document.getElementById('team-select');
     const updateScoreForm = document.getElementById('update-score-form');
     const pointsInput = document.getElementById('points');
 
-    // Laad teams vanuit Firebase
     database.ref('teams').on('value', function (snapshot) {
         let teams = snapshot.val();
         updateLeaderboard(teams);
-        updateTeamSelect(teams);
     });
 
     function updateLeaderboard(teams) {
@@ -56,19 +51,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const row = document.createElement('tr');
                 row.innerHTML = `<td>${team.name}</td><td>${team.points}</td>`;
                 leaderboardTableBody.appendChild(row);
-            }
-        }
-    }
-
-    function updateTeamSelect(teams) {
-        teamSelect.innerHTML = '';
-        for (const teamId in teams) {
-            if (teams.hasOwnProperty(teamId)) {
-                const team = teams[teamId];
-                const option = document.createElement('option');
-                option.value = teamId;
-                option.textContent = team.name;
-                teamSelect.appendChild(option);
             }
         }
     }
@@ -87,14 +69,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Modal functionality
     const modal = document.getElementById("challengeModal");
     const closeButton = document.querySelector(".close-button");
-
     closeButton.addEventListener("click", function () {
         modal.style.display = "none";
     });
-
     window.addEventListener("click", function (event) {
         if (event.target === modal) {
             modal.style.display = "none";
@@ -104,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.startChallenge = function (location) {
         database.ref('challenges').once('value').then(function (snapshot) {
             const challenges = snapshot.val();
-            const challenge = challenges.find(ch => ch.location === location && ch.veroverd === false);
+            const challenge = challenges.find(ch => ch.location === location && !ch.veroverd);
             if (challenge) {
                 database.ref('opdrachten').once('value').then(function (opdrachtenSnapshot) {
                     const opdrachten = opdrachtenSnapshot.val();
@@ -118,4 +97,31 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     };
+    function createColoredMarker(color, latlng) {
+        var markerHtmlStyles = `
+        background-color: ${color || '#3388ff'};
+        width: 2rem;
+        height: 2rem;
+        display: block;
+        left: -1rem;
+        top: -1rem;
+        position: relative;
+        border-radius: 2rem 2rem 0;
+        transform: rotate(45deg);
+        border: 1px solid #FFFFFF`;
+
+        var icon = L.divIcon({
+            className: "my-custom-pin",
+            iconAnchor: [0, 24],
+            labelAnchor: [-6, 0],
+            popupAnchor: [0, -36],
+            html: `<span style="${markerHtmlStyles}" />`
+        });
+
+        return L.marker(latlng, { icon: icon });
+    }
+
+
 });
+
+

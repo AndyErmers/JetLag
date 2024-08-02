@@ -4,24 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JetLag</title>
-    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <!-- Voeg Firebase SDK's toe -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <header>
         <h1>JetLag</h1>
+        <div id="clock"></div>
     </header>
+
     <main>
         <section id="map" style="height: 500px;">
             <h2>Live Kaart van Limburg</h2>
         </section>
+
+
+
         <section id="leaderboard">
             <h2>Leaderboard</h2>
-
             <table id="leaderboard-table">
                 <thead>
                     <tr>
@@ -34,6 +38,7 @@
                 </tbody>
             </table>
         </section>
+
         <section id="rules">
             <h2>Spelregels</h2>
             <div class="rules-content">
