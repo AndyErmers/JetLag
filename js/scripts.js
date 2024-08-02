@@ -98,8 +98,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     };
     function createColoredMarker(color, latlng) {
+        // Als er geen kleur is opgegeven, gebruik wit als standaardkleur
+        var finalColor = color || '#FFFFFF';  // Verander '#3388ff' naar '#FFFFFF' voor wit als standaard
+
         var markerHtmlStyles = `
-        background-color: ${color || '#3388ff'};
+        background-color: ${finalColor};
         width: 2rem;
         height: 2rem;
         display: block;
@@ -120,6 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return L.marker(latlng, { icon: icon });
     }
+
 
 
 });
