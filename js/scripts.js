@@ -20,86 +20,82 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var bounds = L.latLngBounds();
 
-    database.ref('challenges').once('value').then(function (snapshot) {
-        const challenges = snapshot.val();
-        challenges.forEach(function (challenge) {
-            var marker = createColoredMarker(challenge['kleur?'], [challenge.lat, challenge.lon]);
-            marker.addTo(map)
-                .bindPopup(`<b>${challenge.location}</b><br><button onclick="startChallenge('${challenge.location}')">Challenge starten?</button>`);
-            bounds.extend(marker.getLatLng());
-        });
-        map.fitBounds(bounds);
-        map.setMaxBounds(bounds.pad(0.5));
-    }).catch(error => console.error('Error loading challenges:', error));
-
-
-    const leaderboardTableBody = document.querySelector('#leaderboard-table tbody');
-    const teamSelect = document.getElementById('team-select');
-    const updateScoreForm = document.getElementById('update-score-form');
-    const pointsInput = document.getElementById('points');
-
-    database.ref('teams').on('value', function (snapshot) {
-        let teams = snapshot.val();
-        updateLeaderboard(teams);
-    });
-
-    function updateLeaderboard(teams) {
-        leaderboardTableBody.innerHTML = '';
-        for (const teamId in teams) {
-            if (teams.hasOwnProperty(teamId)) {
-                const team = teams[teamId];
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${team.name}</td><td>${team.points}</td>`;
-                leaderboardTableBody.appendChild(row);
-            }
-        }
-    }
-
-    updateScoreForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        const teamId = teamSelect.value;
-        const points = parseInt(pointsInput.value);
-        if (teamId && !isNaN(points)) {
-            database.ref(`teams/${teamId}`).once('value').then(snapshot => {
-                const team = snapshot.val();
-                const newPoints = (team.points || 0) + points;
-                database.ref(`teams/${teamId}`).update({ points: newPoints });
-                pointsInput.value = '';
-            });
-        }
-    });
-
-    const modal = document.getElementById("challengeModal");
-    const closeButton = document.querySelector(".close-button");
-    closeButton.addEventListener("click", function () {
-        modal.style.display = "none";
-    });
-    window.addEventListener("click", function (event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    });
-
-    window.startChallenge = function (location) {
+    function loadMarkers() {
         database.ref('challenges').once('value').then(function (snapshot) {
             const challenges = snapshot.val();
-            const challenge = challenges.find(ch => ch.location === location && !ch.veroverd);
-            if (challenge) {
-                database.ref('opdrachten').once('value').then(function (opdrachtenSnapshot) {
-                    const opdrachten = opdrachtenSnapshot.val();
-                    const opdracht = opdrachten.find(op => op.niveau === 0);
-                    if (opdracht) {
-                        document.getElementById('challengeText').textContent = opdracht.opdracht;
-                        document.getElementById('challengePoints').textContent = `Punten: ${opdracht.punten}`;
-                        modal.style.display = "block";
-                    }
-                });
-            }
+            challenges.forEach(function (challenge) {
+                var marker = createColoredMarker(challenge['kleur?'], [challenge.lat, challenge.lon]);
+                marker.addTo(map)
+                    .bindPopup(`<b>${challenge.location}</b><br><button onclick="startChallenge('${challenge.location}')">Challenge starten?</button>`);
+                bounds.extend(marker.getLatLng());
+            });
+            map.fitBounds(bounds);
+            map.setMaxBounds(bounds.pad(0.5));
+        }).catch(error => console.error('Error loading challenges:', error));
+    }
+
+    loadMarkers();
+    loadTeams();
+    loadLocations();
+
+    function loadTeams() {
+        const teamSelect = document.getElementById('team-select');
+        database.ref('teams').once('value', snapshot => {
+            const teams = snapshot.val();
+            teamSelect.innerHTML = ''; // Clear existing options
+            Object.keys(teams).forEach(teamKey => {
+                const team = teams[teamKey];
+                const option = document.createElement('option');
+                option.value = team.name; // Store team name directly
+                option.textContent = team.name;
+                teamSelect.appendChild(option);
+            });
         });
-    };
+    }
+
+    function loadLocations() {
+        const locationSelect = document.getElementById('location-select');
+        database.ref('challenges').once('value', snapshot => {
+            const challenges = snapshot.val();
+            locationSelect.innerHTML = ''; // Clear existing options
+            challenges.forEach(challenge => {
+                const option = document.createElement('option');
+                option.value = challenge.location;
+                option.textContent = challenge.location;
+                locationSelect.appendChild(option);
+            });
+        });
+    }
+
+    function conquerLocation() {
+        const selectedTeam = document.getElementById('team-select').value;
+        const selectedLocation = document.getElementById('location-select').value;
+
+        const teamColorMap = {
+            "Team Rood": "Red",
+            "Team Blauw": "Blue",
+            "Team Geel": "Yellow"
+        };
+        const teamColor = teamColorMap[selectedTeam] || '#FFFFFF'; // Default to white if no match
+
+        database.ref('challenges').orderByChild('location').equalTo(selectedLocation).once('value', snapshot => {
+            const challengeData = snapshot.val();
+            const challengeKey = Object.keys(challengeData)[0];
+            database.ref(`challenges/${challengeKey}`).update({
+                'veroverd': true,
+                'kleur?': teamColor
+            }).then(() => {
+                alert("Locatie succesvol veroverd!");
+                loadMarkers(); // Reload markers to show changes
+            }).catch(error => {
+                console.error('Error updating challenge:', error);
+                alert("Fout bij het veroveren van de locatie.");
+            });
+        });
+    }
+
     function createColoredMarker(color, latlng) {
-        // Als er geen kleur is opgegeven, gebruik wit als standaardkleur
-        var finalColor = color || '#FFFFFF';  // Verander '#3388ff' naar '#FFFFFF' voor wit als standaard
+        var finalColor = color || '#FFFFFF'; // Default to white if no color is provided
 
         var markerHtmlStyles = `
         background-color: ${finalColor};
@@ -124,8 +120,10 @@ document.addEventListener('DOMContentLoaded', function () {
         return L.marker(latlng, { icon: icon });
     }
 
-
-
+    document.querySelector('#conquer-button').addEventListener('click', conquerLocation);
 });
 
-
+function startChallenge(location) {
+    // Placeholder function
+    alert(`Challenge started at ${location}`);
+}
