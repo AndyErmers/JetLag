@@ -34,7 +34,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }).catch(error => console.error('Error loading challenges:', error));
     }
 
+    function loadLeaderboard() {
+        const leaderboardTableBody = document.querySelector('#leaderboard-table tbody');
+        database.ref('teams').once('value', snapshot => {
+            const teams = snapshot.val();
+            leaderboardTableBody.innerHTML = ''; // Clear existing rows
+            Object.keys(teams).forEach(teamKey => {
+                const team = teams[teamKey];
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${team.name}</td><td>${team.points}</td>`;
+                leaderboardTableBody.appendChild(row);
+            });
+        });
+    }
+
     loadMarkers();
+    loadLeaderboard();
     loadTeams();
     loadLocations();
 
