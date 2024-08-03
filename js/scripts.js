@@ -48,10 +48,24 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function loadChallengesList() {
+        const challengeList = document.getElementById('challenge-list');
+        database.ref('challenges').once('value', snapshot => {
+            const challenges = snapshot.val();
+            challengeList.innerHTML = ''; // Clear existing list
+            challenges.forEach(challenge => {
+                const challengeDiv = document.createElement('div');
+                challengeDiv.innerHTML = `<span>${challenge.location}</span> <button onclick="startChallenge('${challenge.location}')">Challenge</button>`;
+                challengeList.appendChild(challengeDiv);
+            });
+        });
+    }
+
     loadMarkers();
     loadLeaderboard();
     loadTeams();
     loadLocations();
+    loadChallengesList();
 
     function loadTeams() {
         const teamSelect = document.getElementById('team-select');
@@ -102,6 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }).then(() => {
                 alert("Locatie succesvol veroverd!");
                 loadMarkers(); // Reload markers to show changes
+                loadChallengesList(); // Reload challenge list to reflect changes
             }).catch(error => {
                 console.error('Error updating challenge:', error);
                 alert("Fout bij het veroveren van de locatie.");
@@ -142,3 +157,4 @@ function startChallenge(location) {
     // Placeholder function
     alert(`Challenge started at ${location}`);
 }
+
