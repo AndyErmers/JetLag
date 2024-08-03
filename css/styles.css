@@ -82,3 +82,40 @@ section {
     text-align: center;
     margin: 20px 0;
 }
+
+/* Challenge list styles */
+.challenge-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.challenge-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+    .challenge-item span {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    .challenge-item button {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        background-color: #4CAF50;
+        color: white;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .challenge-item button:hover {
+            background-color: #45a049;
+        }
