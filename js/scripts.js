@@ -71,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     challengeDiv.innerHTML = `
                     <span>${challenge.location}</span>
                     <button onclick="startChallenge('${challenge.location}')">Challenge</button>
-                    <ul>${tasksForLocation}</ul>
                 `;
 
                     challengeList.appendChild(challengeDiv);
@@ -144,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function createColoredMarker(color, latlng) {
-        var finalColor = color || '#808080 '; // Default to white if no color is provided
+        var finalColor = color || '#808080'; // Default to white if no color is provided
 
         var markerHtmlStyles = `
         background-color: ${finalColor};
@@ -156,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
         position: relative;
         border-radius: 2rem 2rem 0;
         transform: rotate(45deg);
-        border: 1px solid #808080 `;
+        border: 1px solid #808080`;
 
         var icon = L.divIcon({
             className: "my-custom-pin",
@@ -217,44 +216,4 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     });
-
-    // Add event listener for the top right input button
-    document.getElementById('top-right-input-button').addEventListener('click', function () {
-        const inputValue = document.getElementById('top-right-input-field').value;
-        if (inputValue === 'HARD-RESET') {
-            resetDatabase();
-        } else {
-            alert('Invalid password');
-        }
-    });
-
-    function resetDatabase() {
-        const challengesRef = database.ref('challenges');
-        const opdrachtenRef = database.ref('opdrachten');
-
-        challengesRef.once('value').then(snapshot => {
-            const updates = {};
-            snapshot.forEach(childSnapshot => {
-                updates[childSnapshot.key + '/kleur?'] = null;
-                updates[childSnapshot.key + '/veroverd'] = false;
-            });
-            return challengesRef.update(updates);
-        }).then(() => {
-            return opdrachtenRef.once('value');
-        }).then(snapshot => {
-            const updates = {};
-            snapshot.forEach(childSnapshot => {
-                updates[childSnapshot.key + '/voltooid'] = false;
-            });
-            return opdrachtenRef.update(updates);
-        }).then(() => {
-            alert('Database has been reset successfully.');
-            loadMarkers();
-            loadChallengesList();
-            loadLeaderboard();
-        }).catch(error => {
-            console.error('Error resetting database:', error);
-            alert('Error resetting database.');
-        });
-    }
 });
