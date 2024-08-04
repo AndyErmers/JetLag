@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const firebaseConfig = {
-        apiKey: "AIzaSyC8WF1NnRcvg4FOmuVjeGZaOAXUQFnpsRY",
+        apiKey: "YOUR_API_KEY",
         authDomain: "jetlag-952b5.firebaseapp.com",
         databaseURL: "https://jetlag-952b5-default-rtdb.europe-west1.firebasedatabase.app",
         projectId: "jetlag-952b5",
@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
             challengeList.innerHTML = ''; // Clear existing list
             challenges.forEach(challenge => {
                 const challengeDiv = document.createElement('div');
+                challengeDiv.classList.add('challenge-item');
                 challengeDiv.innerHTML = `<span>${challenge.location}</span> <button onclick="startChallenge('${challenge.location}')">Challenge</button>`;
                 challengeList.appendChild(challengeDiv);
             });
@@ -150,11 +151,43 @@ document.addEventListener('DOMContentLoaded', function () {
         return L.marker(latlng, { icon: icon });
     }
 
+    function startChallenge(location) {
+        database.ref('challenges').orderByChild('location').equalTo(location).once('value', snapshot => {
+            const challengeData = snapshot.val();
+            const challengeKey = Object.keys(challengeData)[0];
+            const challenge = challengeData[challengeKey];
+
+            if (challenge.veroverd) {
+                alert("Deze locatie is al veroverd.");
+                return;
+            }
+
+            database.ref('opdrachten').orderByChild('locatie').equalTo(location).once('value', snapshot => {
+                const opdrachten = snapshot.val();
+                const beschikbareOpdrachten = Object.values(opdrachten).filter(opdracht => opdracht.niveau === 0 && !opdracht.voltooid);
+
+                if (beschikbareOpdrachten.length === 0) {
+                    alert("Geen beschikbare opdrachten voor deze locatie.");
+                    return;
+                }
+
+                const randomIndex = Math.floor(Math.random() * beschikbareOpdrachten.length);
+                const randomOpdracht = beschikbareOpdrachten[randomIndex];
+
+                document.getElementById('challengeText').textContent = randomOpdracht.opdracht;
+                document.getElementById('challengePoints').textContent = `Punten: ${randomOpdracht.punten}`;
+                document.getElementById('challengeModal').style.display = 'block';
+            });
+        });
+    }
+
     document.querySelector('#conquer-button').addEventListener('click', conquerLocation);
+    document.querySelector('.close-button').addEventListener('click', () => {
+        document.getElementById('challengeModal').style.display = 'none';
+    });
+    window.onclick = function (event) {
+        if (event.target == document.getElementById('challengeModal')) {
+            document.getElementById('challengeModal').style.display = 'none';
+        }
+    };
 });
-
-function startChallenge(location) {
-    // Placeholder function
-    alert(`Challenge started at ${location}`);
-}
-
