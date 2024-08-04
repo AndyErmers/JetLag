@@ -13,6 +13,39 @@ document.addEventListener('DOMContentLoaded', function () {
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
+    const hardResetPassword = 'HARD-RESET'; // Vervang dit door je eigen wachtwoord
+
+    document.getElementById('top-right-input-button').addEventListener('click', () => {
+        const enteredPassword = document.getElementById('top-right-input-field').value;
+        if (enteredPassword === hardResetPassword) {
+            hardReset();
+        } else {
+            alert('Incorrect password');
+        }
+    });
+
+    function hardReset() {
+        database.ref('challenges').once('value').then(snapshot => {
+            snapshot.forEach(challenge => {
+                database.ref(`challenges/${challenge.key}`).update({
+                    veroverd: false,
+                    'kleur?': null
+                });
+            });
+        });
+
+        database.ref('opdrachten').once('value').then(snapshot => {
+            snapshot.forEach(opdracht => {
+                database.ref(`opdrachten/${opdracht.key}`).update({
+                    voltooid: false
+                });
+            });
+        });
+
+        alert("Hard reset uitgevoerd!");
+        location.reload(); // Reload the page to reflect changes
+    }
+
     var map = L.map('map').setView([50.85, 5.95], 10);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -29,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     .bindPopup(`<b>${challenge.location}</b><br><button onclick="startChallenge('${challenge.location}')">Challenge starten?</button>`);
                 bounds.extend(marker.getLatLng());
             });
-            map.fitBounds(bounds);
+            map.fitBounds(bounds, { padding: [20, 20] }); // Adjust the padding as needed
             map.setMaxBounds(bounds.pad(0.5));
         }).catch(error => console.error('Error loading challenges:', error));
     }
@@ -143,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function createColoredMarker(color, latlng) {
-        var finalColor = color || '#808080'; // Default to white if no color is provided
+        var finalColor = color || '#808080'; // Default to grey if no color is provided
 
         var markerHtmlStyles = `
         background-color: ${finalColor};
