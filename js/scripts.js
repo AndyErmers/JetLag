@@ -64,14 +64,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     challengeDiv.className = 'challenge-item';
 
                     // Create a task list for the current location
-                    const tasksForLocation = tasks.filter(task => task.locatie === challenge.location)
+                    const tasksForLocation = Object.values(tasks).filter(task => task.locatie === challenge.location && !task.voltooid)
                         .map(task => `<li>${task.opdracht} (${task.punten} punten)</li>`)
                         .join('');
 
                     challengeDiv.innerHTML = `
                     <span>${challenge.location}</span>
                     <button onclick="startChallenge('${challenge.location}')">Challenge</button>
-                    <ul>${tasksForLocation}</ul>
                 `;
 
                     challengeList.appendChild(challengeDiv);
@@ -79,7 +78,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-
 
     loadMarkers();
     loadLeaderboard();
@@ -171,10 +169,51 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     document.querySelector('#conquer-button').addEventListener('click', conquerLocation);
+
+    let currentOpdrachtKey;
+
+    window.startChallenge = function (location) {
+        database.ref('opdrachten').orderByChild('locatie').equalTo(location).once('value', snapshot => {
+            const opdrachten = snapshot.val();
+            const beschikbareOpdrachten = Object.values(opdrachten).filter(opdracht => opdracht.niveau === 0 && !opdracht.voltooid);
+
+            if (beschikbareOpdrachten.length === 0) {
+                alert("Geen beschikbare opdrachten voor deze locatie.");
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * beschikbareOpdrachten.length);
+            const randomOpdracht = beschikbareOpdrachten[randomIndex];
+
+            currentOpdrachtKey = Object.keys(opdrachten).find(key => opdrachten[key] === randomOpdracht);
+
+            document.getElementById('challengeText').textContent = randomOpdracht.opdracht;
+            document.getElementById('challengePoints').textContent = `Punten: ${randomOpdracht.punten}`;
+            document.getElementById('challengeModal').style.display = 'block';
+        });
+    }
+
+    document.querySelector('.close-button').addEventListener('click', () => {
+        document.getElementById('challengeModal').style.display = 'none';
+    });
+    window.onclick = function (event) {
+        if (event.target == document.getElementById('challengeModal')) {
+            document.getElementById('challengeModal').style.display = 'none';
+        }
+    };
+
+    document.getElementById('completeChallengeButton').addEventListener('click', () => {
+        if (currentOpdrachtKey) {
+            database.ref(`opdrachten/${currentOpdrachtKey}`).update({
+                voltooid: true
+            }).then(() => {
+                alert("Opdracht voltooid!");
+                document.getElementById('challengeModal').style.display = 'none';
+                loadChallengesList(); // Reload challenge list to reflect changes
+            }).catch(error => {
+                console.error('Error updating challenge:', error);
+                alert("Fout bij het voltooien van de opdracht.");
+            });
+        }
+    });
 });
-
-function startChallenge(location) {
-    // Placeholder function
-    alert(`Challenge started at ${location}`);
-}
-
