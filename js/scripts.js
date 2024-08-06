@@ -223,22 +223,56 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.startChallenge = function (location) {
         currentLocation = location; // Store the current location
-        database.ref('opdrachten').orderByChild('locatie').equalTo(location).once('value', snapshot => {
+        database.ref('opdrachten').once('value', snapshot => {
             const opdrachten = snapshot.val();
-            const beschikbareOpdrachten = Object.values(opdrachten).filter(opdracht => opdracht.niveau === 0 && !opdracht.voltooid);
 
-            if (beschikbareOpdrachten.length === 0) {
-                alert("Geen beschikbare opdrachten voor deze locatie.");
-                return;
+            // Split tasks into lists based on the given conditions
+            let locationTasks = [];
+            let niveau0Tasks = [];
+            let niveau1Tasks = [];
+            let niveau2Tasks = [];
+
+            Object.values(opdrachten).forEach(opdracht => {
+                if (!opdracht.voltooid) {
+                    if (opdracht.locatie === location) {
+                        locationTasks.push(opdracht);
+                    } else if (opdracht.niveau === 0 && !opdracht.locatie) {
+                        niveau0Tasks.push(opdracht);
+                    } else if (opdracht.niveau === 1 && !opdracht.locatie) {
+                        niveau1Tasks.push(opdracht);
+                    } else if (opdracht.niveau === 2 && !opdracht.locatie) {
+                        niveau2Tasks.push(opdracht);
+                    }
+                }
+            });
+
+            // Function to get a random task from a list
+            function getRandomTask(tasks) {
+                const randomIndex = Math.floor(Math.random() * tasks.length);
+                return tasks[randomIndex];
             }
 
-            const randomIndex = Math.floor(Math.random() * beschikbareOpdrachten.length);
-            const randomOpdracht = beschikbareOpdrachten[randomIndex];
+            let selectedTask = null;
 
-            currentOpdrachtKey = Object.keys(opdrachten).find(key => opdrachten[key] === randomOpdracht);
+            // Select a task based on the priority
+            if (locationTasks.length > 0) {
+                selectedTask = getRandomTask(locationTasks);
+            } else if (niveau0Tasks.length > 0) {
+                selectedTask = getRandomTask(niveau0Tasks);
+            } else if (niveau1Tasks.length > 0) {
+                selectedTask = getRandomTask(niveau1Tasks);
+            } else if (niveau2Tasks.length > 0) {
+                selectedTask = getRandomTask(niveau2Tasks);
+            }
 
-            document.getElementById('challengeText').textContent = randomOpdracht.opdracht;
-            document.getElementById('challengeModal').style.display = 'block';
+            if (selectedTask) {
+                currentOpdrachtKey = Object.keys(opdrachten).find(key => opdrachten[key] === selectedTask);
+
+                document.getElementById('challengeText').textContent = selectedTask.opdracht;
+                document.getElementById('challengeModal').style.display = 'block';
+            } else {
+                alert("Geen beschikbare opdrachten voor deze locatie.");
+            }
         });
     }
 
