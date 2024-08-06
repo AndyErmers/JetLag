@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Create a task list for the current location
                     const tasksForLocation = Object.values(tasks).filter(task => task.locatie === challenge.location && !task.voltooid)
-                        .map(task => `<li>${task.opdracht} (${task.punten} punten)</li>`)
+                        .map(task => `<li>${task.opdracht} </li>`)
                         .join('');
 
                     challengeDiv.innerHTML = `
@@ -228,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function () {
             currentOpdrachtKey = Object.keys(opdrachten).find(key => opdrachten[key] === randomOpdracht);
 
             document.getElementById('challengeText').textContent = randomOpdracht.opdracht;
-            document.getElementById('challengePoints').textContent = `Punten: ${randomOpdracht.punten}`;
             document.getElementById('challengeModal').style.display = 'block';
         });
     }
