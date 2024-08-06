@@ -127,15 +127,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function loadTeams() {
         const teamSelect = document.getElementById('team-select');
+        const modalTeamSelect = document.getElementById('modal-team-select');
         database.ref('teams').once('value', snapshot => {
             const teams = snapshot.val();
             teamSelect.innerHTML = ''; // Clear existing options
+            modalTeamSelect.innerHTML = ''; // Clear existing options
             Object.keys(teams).forEach(teamKey => {
                 const team = teams[teamKey];
                 const option = document.createElement('option');
                 option.value = team.name; // Store team name directly
                 option.textContent = team.name;
                 teamSelect.appendChild(option);
+
+                // Add the same options to the modal team select
+                const modalOption = document.createElement('option');
+                modalOption.value = team.name;
+                modalOption.textContent = team.name;
+                modalTeamSelect.appendChild(modalOption);
             });
         });
     }
@@ -211,8 +219,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('#conquer-button').addEventListener('click', conquerLocation);
 
     let currentOpdrachtKey;
+    let currentLocation;
 
     window.startChallenge = function (location) {
+        currentLocation = location; // Store the current location
         database.ref('opdrachten').orderByChild('locatie').equalTo(location).once('value', snapshot => {
             const opdrachten = snapshot.val();
             const beschikbareOpdrachten = Object.values(opdrachten).filter(opdracht => opdracht.niveau === 0 && !opdracht.voltooid);
@@ -243,12 +253,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('completeChallengeButton').addEventListener('click', () => {
         if (currentOpdrachtKey) {
+            const selectedTeam = document.getElementById('modal-team-select').value;
+
+            const teamColorMap = {
+                "Team Rood": "Red",
+                "Team Blauw": "Blue",
+                "Team Geel": "Yellow"
+            };
+            const teamColor = teamColorMap[selectedTeam] || '#FFFFFF'; // Default to white if no match
+
             database.ref(`opdrachten/${currentOpdrachtKey}`).update({
                 voltooid: true
             }).then(() => {
-                alert("Opdracht voltooid!");
-                document.getElementById('challengeModal').style.display = 'none';
-                loadChallengesList(); // Reload challenge list to reflect changes
+                database.ref('challenges').orderByChild('location').equalTo(currentLocation).once('value', snapshot => {
+                    const challengeData = snapshot.val();
+                    const challengeKey = Object.keys(challengeData)[0];
+                    database.ref(`challenges/${challengeKey}`).update({
+                        'veroverd': true,
+                        'kleur?': teamColor
+                    }).then(() => {
+                        alert("Opdracht voltooid en locatie veroverd!");
+                        document.getElementById('challengeModal').style.display = 'none';
+                        loadMarkers(); // Reload markers to show changes
+                        loadChallengesList(); // Reload challenge list to reflect changes
+                    }).catch(error => {
+                        console.error('Error updating challenge:', error);
+                        alert("Fout bij het veroveren van de locatie.");
+                    });
+                });
             }).catch(error => {
                 console.error('Error updating challenge:', error);
                 alert("Fout bij het voltooien van de opdracht.");
