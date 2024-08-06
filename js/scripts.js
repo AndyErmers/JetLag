@@ -69,16 +69,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function loadLeaderboard() {
         const leaderboardTableBody = document.querySelector('#leaderboard-table tbody');
-        database.ref('teams').once('value', snapshot => {
-            const teams = snapshot.val();
+        database.ref('challenges').once('value', snapshot => {
+            const challenges = snapshot.val();
+            const teamCounts = { "Red": 0, "Blue": 0, "Yellow": 0 };
+
+            challenges.forEach(challenge => {
+                if (challenge['veroverd'] && challenge['kleur?']) {
+                    teamCounts[challenge['kleur?']] += 1;
+                }
+            });
+
             leaderboardTableBody.innerHTML = ''; // Clear existing rows
-            Object.keys(teams).forEach(teamKey => {
-                const team = teams[teamKey];
+            Object.keys(teamCounts).forEach(color => {
                 const row = document.createElement('tr');
-                row.innerHTML = `<td>${team.name}</td><td>${team.points}</td>`;
+                row.innerHTML = `<td>${color}</td><td>${teamCounts[color]}</td>`;
                 leaderboardTableBody.appendChild(row);
             });
-        });
+        }).catch(error => console.error('Error loading leaderboard:', error));
     }
 
     function loadChallengesList() {
